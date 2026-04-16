@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HP Ordquiz</title>
+
+  <!-- Beskrivning visas i sökresultat och länkförhandsvisningar -->
+  <meta name="description" content="Träna på orddelen i högskoleprovet">
+
+  <!-- PWA-inställningar: gör att appen kan installeras på hemskärmen
+       och ser ut som en native-app utan webbläsarens adressfält -->
+  <meta name="theme-color" content="#0f0f0f">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="manifest" href="manifest.json">
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- <main> används som landmärke så att skärmläsare och
+       tangentbordsanvändare kan hoppa direkt till huvudinnehållet -->
+  <main>
+
+    <!-- Startsida: nivåval och starta-knapp -->
+    <section id="view-start">
+      <h1>HP Ordquiz</h1>
+      <p class="subtitle">Träna på orddelen i högskoleprovet</p>
+
+      <!-- role="radiogroup" berättar för skärmläsare att knapparna
+           fungerar som ett val där bara ett alternativ är aktivt åt gången -->
+      <div class="difficulty-buttons" role="radiogroup" aria-label="Välj svårighetsnivå">
+        <button class="difficulty-btn selected" data-difficulty="all">Blanda allt</button>
+        <button class="difficulty-btn" data-difficulty="grund">Grund</button>
+        <button class="difficulty-btn" data-difficulty="medel">Medel</button>
+        <button class="difficulty-btn" data-difficulty="svar">Svår</button>
+        <button class="difficulty-btn" data-difficulty="elit">Elit</button>
+      </div>
+
+      <button class="btn-primary" id="start-btn">Starta quiz</button>
+    </section>
+
+    <!-- Quiz: en fråga i taget — dold vid start, visas av JavaScript -->
+    <section id="view-quiz" hidden>
+      <div class="quiz-header">
+        <span class="quiz-progress-text" id="progress-text">Fråga 1 av 10</span>
+        <span class="quiz-level" id="quiz-level">Grundnivå</span>
+      </div>
+
+      <!-- Förloppsindikator: den inre diven växer i bredd via JavaScript
+           för att visa hur långt i quizet användaren har kommit -->
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+
+      <div class="question-card">
+        <h2 class="question-word" id="question-word">Aberration</h2>
+        <p class="question-prompt">Vad betyder detta ord?</p>
+
+        <!-- Svarsalternativen skapas dynamiskt av JavaScript -->
+        <div class="options-grid" id="options-grid">
+          <!-- Fylls av JavaScript -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Resultat: poäng och facit — dold vid start, visas av JavaScript -->
+    <section id="view-result" hidden>
+      <div class="result-score">
+        <span class="score-number" id="score-number">0</span>
+        <span class="score-total">/10</span>
+      </div>
+      <p class="result-level" id="result-level">Grundnivå</p>
+
+      <!-- Facitlistan byggs upp av JavaScript efter avslutat quiz -->
+      <ul class="result-list" id="result-list">
+        <!-- Fylls av JavaScript -->
+      </ul>
+
+      <div class="result-buttons">
+        <button class="btn-primary" id="retry-btn">Kör igen</button>
+        <button class="btn-secondary" id="home-btn">Tillbaka till start</button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- questions.js laddas före app.js eftersom app.js är beroende av frågorna -->
+  <script src="js/questions.js" defer></script>
+  <script src="js/app.js" defer></script>
+
+</body>
+</html>
