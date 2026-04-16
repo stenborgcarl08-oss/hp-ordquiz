@@ -1,0 +1,505 @@
+/* =========================================================
+   Reset och bas
+   Nollställer webbläsarens standardstilar och sätter upp
+   grundläggande typografi och bakgrundsfärg för hela sidan.
+   ========================================================= */
+
+/* box-sizing: border-box gör att padding och border räknas
+   in i elementets bredd — enklare att räkna med layouter */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  /* Inter är ett modernt sans-serif-typsnitt som liknar
+     Composio-designens geometriska känsla */
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+  /* Void Black — sidans primära bakgrundsfärg */
+  background-color: #0f0f0f;
+  color: #ffffff;
+
+  /* 100dvh fungerar på moderna webbläsare och respekterar
+     adressfältet på mobil — 100vh är fallback för äldre */
+  min-height: 100vh;
+  min-height: 100dvh;
+
+  font-size: 16px;
+  line-height: 1.5;
+
+  /* Förhindrar horisontell scroll på smala skärmar */
+  overflow-x: hidden;
+}
+
+
+/* =========================================================
+   Layout
+   Centrerar innehållet och definierar den övergripande
+   strukturen för hela appen.
+   ========================================================= */
+
+main {
+  /* Begränsar bredden så att innehållet inte sträcker sig
+     för brett på stora skärmar */
+  max-width: 600px;
+  width: 100%;
+  margin: 0 auto;
+
+  /* Flexbox med kolumnriktning gör att sektioner staplas
+     vertikalt och kan centreras med ease */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  min-height: 100vh;
+  min-height: 100dvh;
+
+  padding: 24px 16px;
+}
+
+/* [hidden] är ett inbyggt HTML-attribut — important säkerställer
+   att JavaScript kan dölja element även om andra regler finns */
+[hidden] {
+  display: none !important;
+}
+
+
+/* =========================================================
+   Startsida
+   Stilar för välkomstsidan med rubrik, undertext och
+   svårighetsvalsknapparna.
+   ========================================================= */
+
+#view-start {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 24px;
+}
+
+/* Komprimerad rubriktypografi — tight line-height skapar
+   auktoritativ känsla som i Composio-designen */
+#view-start h1 {
+  font-size: 3rem;
+  font-weight: 400;
+  line-height: 0.87;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+}
+
+/* Undertext — Ghost White för att recidera bakom rubriken */
+.subtitle {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.5;
+}
+
+/* Behållaren för svårighetsknapparna — flex wrap gör att
+   knapparna radbryts snyggt på smala skärmar */
+.difficulty-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+}
+
+/* Grundstil för varje svårighetsknapp */
+.difficulty-btn {
+  background: transparent;
+  color: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-family: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+
+  /* Minsta touchyta 44px för att fungera bra på mobil */
+  min-height: 44px;
+}
+
+.difficulty-btn:hover {
+  border-color: rgba(0, 255, 255, 0.4);
+  color: #ffffff;
+}
+
+/* Vald svårighetsknapp — Electric Cyan som accent */
+.difficulty-btn.selected {
+  border-color: #00ffff;
+  color: #00ffff;
+  background: rgba(0, 255, 255, 0.06);
+}
+
+/* Primär knapp — vit bakgrund med mörk text enligt Composio-stil */
+.btn-primary {
+  background: #ffffff;
+  color: #111111;
+  border: none;
+  border-radius: 4px;
+  padding: 12px 32px;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  min-height: 44px;
+  transition: opacity 0.15s ease;
+}
+
+.btn-primary:hover {
+  opacity: 0.88;
+}
+
+/* Sekundär knapp — transparent med synlig border */
+.btn-secondary {
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  padding: 12px 32px;
+  font-family: inherit;
+  font-size: 1rem;
+  cursor: pointer;
+  min-height: 44px;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.btn-secondary:hover {
+  border-color: rgba(255, 255, 255, 0.4);
+  color: #ffffff;
+}
+
+
+/* =========================================================
+   Quiz
+   Stilar för quizvyn med progressindikator, frågekortet
+   och svarsalternativen.
+   ========================================================= */
+
+#view-quiz {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Quizets topprad — progresstext till vänster, nivå till höger */
+.quiz-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.quiz-progress-text {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.quiz-level {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* Förloppsindikatorns behållare — tunn linje under headern */
+.progress-bar {
+  width: 100%;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+/* Den fyllda delen av förloppsindikatorn — Electric Cyan */
+.progress-fill {
+  height: 100%;
+  background: #00ffff;
+  border-radius: 2px;
+
+  /* width sätts dynamiskt av JavaScript */
+  width: 0%;
+  transition: width 0.3s ease;
+}
+
+/* Frågekort — Pure Black bakgrund med brutalist shadow
+   som ger det karakteristiska djupet i Composio-designen */
+.question-card {
+  background: #000000;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+
+  /* Brutalist shadow — hård offset som ger råhet och djup */
+  box-shadow: rgba(0, 0, 0, 0.15) 4px 4px 0px 0px;
+
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Ordet som ska definieras — storformat för tydlighet */
+.question-word {
+  font-size: 2rem;
+  font-weight: 400;
+  line-height: 1.0;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+}
+
+.question-prompt {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 8px;
+}
+
+/* 2x2-rutnät för svarsalternativen — ger en tydlig och
+   välstrukturerad layout på alla skärmstorlekar */
+.options-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+/* Varje svarsknapp */
+.option-btn {
+  background: transparent;
+  color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  padding: 12px 14px;
+  font-family: inherit;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  cursor: pointer;
+  text-align: left;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-height: 44px;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.option-btn:hover:not(:disabled) {
+  border-color: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* Vald svarsknapp — Electric Cyan som bekräftelse */
+.option-btn.selected {
+  border-color: #00ffff;
+  background: rgba(0, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+/* Korrekt svar — grön border för tydlig återkoppling */
+.option-btn.correct {
+  border-color: #22c55e;
+  background: rgba(34, 197, 94, 0.08);
+  color: #ffffff;
+}
+
+/* Felaktigt svar — röd border för tydlig återkoppling */
+.option-btn.wrong {
+  border-color: #ef4444;
+  background: rgba(239, 68, 68, 0.08);
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Bokstavsetiketten (A, B, C, D) i varje svarsknapp */
+.option-letter {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.35);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.option-btn.selected .option-letter {
+  color: rgba(0, 255, 255, 0.7);
+}
+
+.option-btn.correct .option-letter {
+  color: rgba(34, 197, 94, 0.8);
+}
+
+.option-btn.wrong .option-letter {
+  color: rgba(239, 68, 68, 0.6);
+}
+
+
+/* =========================================================
+   Resultat
+   Stilar för resultatsidan med poäng, nivå, facitlista
+   och knappar för att köra om eller gå tillbaka.
+   ========================================================= */
+
+#view-result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  text-align: center;
+}
+
+/* Poängvisningen — stor cyan siffra som fångar blicken */
+.result-score {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.score-number {
+  font-size: 3.5rem;
+  font-weight: 400;
+  line-height: 1.0;
+  color: #00ffff;
+  letter-spacing: -0.02em;
+}
+
+/* Det totala antalet frågor visas nedtonat bredvid poängen */
+.score-total {
+  font-size: 1.5rem;
+  color: rgba(255, 255, 255, 0.35);
+  font-weight: 400;
+}
+
+/* Texten som visar vilken svårighetsnivå quizet kördes på */
+.result-level {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 500;
+}
+
+/* Facitlistan — tar bort standardkulpunkterna för en
+   renare look som passar den mörka designen */
+.result-list {
+  list-style: none;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Varje facit-rad */
+.result-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: #000000;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 4px;
+  padding: 12px 14px;
+  text-align: left;
+  font-size: 0.875rem;
+}
+
+/* Korrekt svar — grön vänsterborder som visuell signal */
+.result-item.correct {
+  border-left: 3px solid #22c55e;
+}
+
+/* Fel svar — röd vänsterborder som visuell signal */
+.result-item.wrong {
+  border-left: 3px solid #ef4444;
+}
+
+/* Ikonen (t.ex. ✓ eller ✗) i varje facit-rad */
+.result-icon {
+  font-size: 0.875rem;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.result-item.correct .result-icon {
+  color: #22c55e;
+}
+
+.result-item.wrong .result-icon {
+  color: #ef4444;
+}
+
+/* Texten i varje facit-rad */
+.result-word {
+  font-weight: 500;
+  color: #ffffff;
+}
+
+.result-answer {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.8125rem;
+}
+
+/* Knapparna längst ner på resultatsidan */
+.result-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+
+/* =========================================================
+   Responsivt
+   Anpassningar för skärmar smalare än 600px — säkerställer
+   att appen fungerar lika bra på mobil som på desktop.
+   ========================================================= */
+
+@media (max-width: 600px) {
+  /* Rubriken krymps något på små skärmar */
+  #view-start h1 {
+    font-size: 2.25rem;
+  }
+
+  /* Svarsalternativen staplas i en kolumn på mobil för
+     bättre läsbarhet och större klickytor */
+  .options-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Lite mindre padding i frågekorten på smala skärmar */
+  .question-card {
+    padding: 20px 16px;
+  }
+
+  /* Knapparna staplas vertikalt på mobil */
+  .result-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .result-buttons .btn-primary,
+  .result-buttons .btn-secondary {
+    width: 100%;
+    max-width: 320px;
+    text-align: center;
+  }
+}
+
+
+/* =========================================================
+   PWA safe area
+   Lägger till extra padding på enheter med "notch" eller
+   rundade hörn (t.ex. iPhone X och nyare) så att innehållet
+   inte hamnar bakom systemgränssnitten.
+   ========================================================= */
+
+@supports (padding: env(safe-area-inset-bottom)) {
+  main {
+    padding-bottom: calc(24px + env(safe-area-inset-bottom));
+    padding-left: calc(16px + env(safe-area-inset-left));
+    padding-right: calc(16px + env(safe-area-inset-right));
+  }
+}
