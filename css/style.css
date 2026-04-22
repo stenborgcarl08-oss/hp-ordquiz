@@ -1,11 +1,62 @@
 /* =========================================================
+   Designtokens
+   Färger, radier, skuggor och rörelse samlas som CSS-variabler
+   högst upp så att hela ljusa temat kan justeras på ett ställe.
+   ========================================================= */
+
+:root {
+  /* Ljus bas — ljust grågrönt som håller fräscht utan att vara skarpt vitt */
+  --bg-page: #eef5ef;
+  --bg-card: #ffffff;
+  --bg-soft: #f7faf8;
+
+  /* Typografi — djupt mörkgrönt istället för rent svart ger varmare känsla */
+  --text-strong: #0f2a1b;
+  --text-normal: #1f3a2b;
+  --text-muted: #5f7768;
+
+  /* Grön accentfamilj — primär är mellanmättad för att passa både
+     knapp-bakgrund och status "rätt svar" utan två separata färger */
+  --accent: #22c55e;
+  --accent-hover: #16a34a;
+  --accent-soft: #dcfce7;
+  --accent-softer: #edfbf1;
+  --accent-ring: rgba(34, 197, 94, 0.28);
+
+  /* Röd familj för fel svar — tillräckligt kontrastrik mot grönt */
+  --danger: #ef4444;
+  --danger-soft: #fee2e2;
+
+  /* Neutrala ramar och diskrta linjer */
+  --border: #dfe7e1;
+  --border-strong: #c3d0c8;
+
+  /* Skuggor — mjuka, flera lager, ger lyft utan att bli tunga */
+  --shadow-card: 0 1px 2px rgba(15, 42, 27, 0.04),
+                 0 6px 18px rgba(15, 42, 27, 0.06);
+  --shadow-lift: 0 2px 4px rgba(15, 42, 27, 0.05),
+                 0 14px 32px rgba(15, 42, 27, 0.1);
+
+  /* Rundningar — konsekvent "pill"-känsla i knappar och kort */
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  --radius-pill: 999px;
+
+  /* Rörelse — lite längre och mjukare än default så animationer
+     känns avsiktliga och inte ryckiga */
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --dur-fast: 0.18s;
+  --dur-med: 0.28s;
+}
+
+
+/* =========================================================
    Reset och bas
    Nollställer webbläsarens standardstilar och sätter upp
    grundläggande typografi och bakgrundsfärg för hela sidan.
    ========================================================= */
 
-/* box-sizing: border-box gör att padding och border räknas
-   in i elementets bredd — enklare att räkna med layouter */
 *,
 *::before,
 *::after {
@@ -15,25 +66,24 @@
 }
 
 body {
-  /* Inter är ett modernt sans-serif-typsnitt som liknar
-     Composio-designens geometriska känsla */
   font-family: Inter, ui-sans-serif, system-ui, -apple-system,
     BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 
-  /* Void Black — sidans primära bakgrundsfärg */
-  background-color: #0f0f0f;
-  color: #ffffff;
+  /* Mjuk grön gradient som bakgrund — ger lite liv utan att störa innehållet */
+  background:
+    radial-gradient(1200px 600px at 10% -10%, #d9efe0 0%, transparent 60%),
+    radial-gradient(900px 500px at 90% 110%, #e6f3eb 0%, transparent 60%),
+    var(--bg-page);
+  color: var(--text-normal);
 
-  /* 100dvh fungerar på moderna webbläsare och respekterar
-     adressfältet på mobil — 100vh är fallback för äldre */
   min-height: 100vh;
   min-height: 100dvh;
 
-  font-size: 16px;
-  line-height: 1.5;
+  font-size: 17px;
+  line-height: 1.55;
 
-  /* Förhindrar horisontell scroll på smala skärmar */
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
 }
 
 
@@ -44,14 +94,10 @@ body {
    ========================================================= */
 
 main {
-  /* Begränsar bredden så att innehållet inte sträcker sig
-     för brett på stora skärmar */
-  max-width: 600px;
+  max-width: 640px;
   width: 100%;
   margin: 0 auto;
 
-  /* Flexbox med kolumnriktning gör att sektioner staplas
-     vertikalt och kan centreras med ease */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -59,7 +105,7 @@ main {
   min-height: 100vh;
   min-height: 100dvh;
 
-  padding: 24px 16px;
+  padding: 32px 20px;
 }
 
 /* [hidden] är ett inbyggt HTML-attribut — important säkerställer
@@ -71,8 +117,7 @@ main {
 
 /* =========================================================
    Startsida
-   Stilar för välkomstsidan med rubrik, undertext och
-   svårighetsvalsknapparna.
+   Hälsar användaren, låter välja svårighet och starta quizet.
    ========================================================= */
 
 #view-start {
@@ -80,24 +125,23 @@ main {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 24px;
+  gap: 28px;
+  animation: rise var(--dur-med) var(--ease) both;
 }
 
-/* Komprimerad rubriktypografi — tight line-height skapar
-   auktoritativ känsla som i Composio-designen */
 #view-start h1 {
   font-size: 3rem;
-  font-weight: 400;
-  line-height: 0.87;
-  color: #ffffff;
+  font-weight: 700;
+  line-height: 1.05;
+  color: var(--text-strong);
   letter-spacing: -0.02em;
 }
 
-/* Undertext — Ghost White för att recidera bakom rubriken */
 .subtitle {
-  font-size: 1rem;
-  color: rgba(255, 255, 255, 0.6);
+  font-size: 1.125rem;
+  color: var(--text-muted);
   line-height: 1.5;
+  max-width: 36ch;
 }
 
 /* Behållaren för svårighetsknapparna — flex wrap gör att
@@ -106,342 +150,393 @@ main {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 8px;
+  gap: 10px;
   width: 100%;
 }
 
-/* Grundstil för varje svårighetsknapp */
+/* Pill-formade svårighetsknappar — större och luftigare än tidigare */
 .difficulty-btn {
-  background: transparent;
-  color: rgba(255, 255, 255, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 4px;
-  padding: 8px 16px;
-  font-family: inherit;
-  font-size: 0.875rem;
-  cursor: pointer;
-  transition: border-color 0.15s ease, color 0.15s ease;
-
-  /* Minsta touchyta 44px för att fungera bra på mobil */
-  min-height: 44px;
-}
-
-.difficulty-btn:hover {
-  border-color: rgba(0, 255, 255, 0.4);
-  color: #ffffff;
-}
-
-/* Vald svårighetsknapp — Electric Cyan som accent */
-.difficulty-btn.selected {
-  border-color: #00ffff;
-  color: #00ffff;
-  background: rgba(0, 255, 255, 0.06);
-}
-
-/* Primär knapp — vit bakgrund med mörk text enligt Composio-stil */
-.btn-primary {
-  background: #ffffff;
-  color: #111111;
-  border: none;
-  border-radius: 4px;
-  padding: 12px 32px;
+  background: var(--bg-card);
+  color: var(--text-normal);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-pill);
+  padding: 12px 22px;
   font-family: inherit;
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
-  min-height: 44px;
-  transition: opacity 0.15s ease;
+  transition:
+    transform var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease),
+    background var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease),
+    box-shadow var(--dur-fast) var(--ease);
+  min-height: 48px;
+}
+
+.difficulty-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent-hover);
+  transform: translateY(-1px);
+}
+
+.difficulty-btn:active {
+  transform: translateY(0);
+}
+
+/* Vald svårighetsknapp — fylld grön så att valet är omisskännligt */
+.difficulty-btn.selected {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #ffffff;
+  box-shadow: 0 6px 14px var(--accent-ring);
+}
+
+/* Primär knapp — stor, grön och tydligt tryckbar */
+.btn-primary {
+  background: var(--accent);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 18px 36px;
+  font-family: inherit;
+  font-size: 1.125rem;
+  font-weight: 600;
+  cursor: pointer;
+  min-height: 56px;
+  box-shadow: 0 8px 20px var(--accent-ring);
+  transition:
+    transform var(--dur-fast) var(--ease),
+    background var(--dur-fast) var(--ease),
+    box-shadow var(--dur-fast) var(--ease);
 }
 
 .btn-primary:hover {
-  opacity: 0.88;
+  background: var(--accent-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 26px var(--accent-ring);
 }
 
-/* Sekundär knapp — transparent med synlig border */
+.btn-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px var(--accent-ring);
+}
+
+/* Sekundär knapp — vit bakgrund med tydlig kant */
 .btn-secondary {
-  background: transparent;
-  color: rgba(255, 255, 255, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 4px;
-  padding: 12px 32px;
+  background: var(--bg-card);
+  color: var(--text-strong);
+  border: 1.5px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  padding: 18px 36px;
   font-family: inherit;
-  font-size: 1rem;
+  font-size: 1.125rem;
+  font-weight: 600;
   cursor: pointer;
-  min-height: 44px;
-  transition: border-color 0.15s ease, color 0.15s ease;
+  min-height: 56px;
+  transition:
+    transform var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease);
 }
 
 .btn-secondary:hover {
-  border-color: rgba(255, 255, 255, 0.4);
-  color: #ffffff;
+  border-color: var(--accent);
+  color: var(--accent-hover);
+  transform: translateY(-2px);
+}
+
+.btn-secondary:active {
+  transform: translateY(0);
 }
 
 
 /* =========================================================
    Quiz
-   Stilar för quizvyn med progressindikator, frågekortet
-   och svarsalternativen.
+   Progressindikator, frågekort och svarsalternativ.
    ========================================================= */
 
 #view-quiz {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
+  animation: rise var(--dur-med) var(--ease) both;
 }
 
-/* Quizets topprad — progresstext till vänster, nivå till höger */
 .quiz-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 16px;
 }
 
 .quiz-progress-text {
-  font-size: 0.875rem;
-  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-muted);
 }
 
+/* Nivåtagg — diskret "chip" till höger om progressen */
 .quiz-level {
   font-size: 0.75rem;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.4);
+  font-weight: 700;
+  color: var(--accent-hover);
+  background: var(--accent-soft);
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
 
-/* Förloppsindikatorns behållare — tunn linje under headern */
+/* Förloppsindikator — tjockare och med rundade hörn */
 .progress-bar {
   width: 100%;
-  height: 3px;
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 2px;
+  height: 10px;
+  background: #e3ece6;
+  border-radius: var(--radius-pill);
   overflow: hidden;
 }
 
-/* Den fyllda delen av förloppsindikatorn — Electric Cyan */
 .progress-fill {
   height: 100%;
-  background: #00ffff;
-  border-radius: 2px;
-
-  /* width sätts dynamiskt av JavaScript */
+  background: linear-gradient(90deg, var(--accent), #4ade80);
+  border-radius: var(--radius-pill);
   width: 0%;
-  transition: width 0.3s ease;
+  transition: width 0.4s var(--ease);
 }
 
-/* Frågekort — Pure Black bakgrund med brutalist shadow
-   som ger det karakteristiska djupet i Composio-designen */
+/* Frågekort — vitt kort med mjuk skugga */
 .question-card {
-  background: #000000;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 4px;
-
-  /* Brutalist shadow — hård offset som ger råhet och djup */
-  box-shadow: rgba(0, 0, 0, 0.15) 4px 4px 0px 0px;
-
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
   padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Ordet som ska besvaras — stort och uppmärksamhetsfokuserat */
+.question-word {
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--text-strong);
+  letter-spacing: -0.02em;
+}
+
+.question-prompt {
+  font-size: 1rem;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+/* Svarsalternativ: en kolumn eftersom meningarna nu är längre.
+   En kolumn håller texten läsbar och knapparna stora. */
+.options-grid {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-/* Ordet som ska definieras — storformat för tydlighet */
-.question-word {
-  font-size: 2rem;
-  font-weight: 400;
-  line-height: 1.0;
-  color: #ffffff;
-  letter-spacing: -0.01em;
-}
-
-.question-prompt {
-  font-size: 0.875rem;
-  color: rgba(255, 255, 255, 0.5);
-  margin-bottom: 8px;
-}
-
-/* 2x2-rutnät för svarsalternativen — ger en tydlig och
-   välstrukturerad layout på alla skärmstorlekar */
-.options-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
-
-/* Varje svarsknapp */
+/* Svarsknapp — luftig och tryckbar, lyfter lite vid hover */
 .option-btn {
-  background: transparent;
-  color: rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
-  padding: 12px 14px;
+  background: var(--bg-soft);
+  color: var(--text-normal);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
   font-family: inherit;
-  font-size: 0.875rem;
-  line-height: 1.4;
+  font-size: 1.0625rem;
+  line-height: 1.45;
+  font-weight: 500;
   cursor: pointer;
   text-align: left;
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  min-height: 44px;
-  transition: border-color 0.15s ease, background 0.15s ease;
+  min-height: 60px;
+  transition:
+    transform var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease),
+    background var(--dur-fast) var(--ease),
+    box-shadow var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease);
 }
 
 .option-btn:hover:not(:disabled) {
-  border-color: rgba(255, 255, 255, 0.25);
-  background: rgba(255, 255, 255, 0.04);
+  border-color: var(--accent);
+  background: var(--accent-softer);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card);
 }
 
-/* Vald svarsknapp — Electric Cyan som bekräftelse */
-.option-btn.selected {
-  border-color: #00ffff;
-  background: rgba(0, 255, 255, 0.08);
-  color: #ffffff;
+.option-btn:active:not(:disabled) {
+  transform: translateY(0);
 }
 
-/* Korrekt svar — grön border för tydlig återkoppling */
+/* När användaren har svarat: disabled-läge — kvarhåll färger men
+   ta bort interaktiva ledtrådar */
+.option-btn:disabled {
+  cursor: default;
+  transform: none;
+}
+
+/* Korrekt svar — fylld grön så att ögat direkt söker sig dit */
 .option-btn.correct {
-  border-color: #22c55e;
-  background: rgba(34, 197, 94, 0.08);
-  color: #ffffff;
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--text-strong);
+  animation: pop 0.35s var(--ease);
 }
 
-/* Felaktigt svar — röd border för tydlig återkoppling */
+/* Felaktigt svar — rödton markerar det som användaren valt fel */
 .option-btn.wrong {
-  border-color: #ef4444;
-  background: rgba(239, 68, 68, 0.08);
-  color: rgba(255, 255, 255, 0.6);
-}
-
-/* Bokstavsetiketten (A, B, C, D) i varje svarsknapp */
-.option-letter {
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.35);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  flex-shrink: 0;
-  margin-top: 1px;
-}
-
-.option-btn.selected .option-letter {
-  color: rgba(0, 255, 255, 0.7);
-}
-
-.option-btn.correct .option-letter {
-  color: rgba(34, 197, 94, 0.8);
-}
-
-.option-btn.wrong .option-letter {
-  color: rgba(239, 68, 68, 0.6);
+  border-color: var(--danger);
+  background: var(--danger-soft);
+  color: #7f1d1d;
+  animation: shake 0.4s var(--ease);
 }
 
 
 /* =========================================================
    Resultat
-   Stilar för resultatsidan med poäng, nivå, facitlista
-   och knappar för att köra om eller gå tillbaka.
+   Poäng, uppmuntrande meddelande, facit och knappar för
+   att köra igen eller gå tillbaka.
    ========================================================= */
 
 #view-result {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 24px;
+  gap: 22px;
   text-align: center;
+  animation: rise var(--dur-med) var(--ease) both;
 }
 
-/* Poängvisningen — stor cyan siffra som fångar blicken */
+/* Poängvisningen — ett cirkel-"medaljong" för att lyfta känslan */
 .result-score {
   display: flex;
   align-items: baseline;
-  gap: 4px;
+  justify-content: center;
+  gap: 6px;
+  background: var(--bg-card);
+  padding: 28px 44px;
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-lift);
+  border: 1px solid var(--border);
 }
 
 .score-number {
-  font-size: 3.5rem;
-  font-weight: 400;
+  font-size: 4.5rem;
+  font-weight: 800;
   line-height: 1.0;
-  color: #00ffff;
-  letter-spacing: -0.02em;
+  color: var(--accent);
+  letter-spacing: -0.03em;
 }
 
-/* Det totala antalet frågor visas nedtonat bredvid poängen */
 .score-total {
-  font-size: 1.5rem;
-  color: rgba(255, 255, 255, 0.35);
-  font-weight: 400;
+  font-size: 1.75rem;
+  color: var(--text-muted);
+  font-weight: 600;
 }
 
-/* Texten som visar vilken svårighetsnivå quizet kördes på */
 .result-level {
-  font-size: 0.875rem;
-  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.8125rem;
+  color: var(--accent-hover);
+  background: var(--accent-soft);
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  font-weight: 500;
+  font-weight: 700;
 }
 
-/* Facitlistan — tar bort standardkulpunkterna för en
-   renare look som passar den mörka designen */
+/* Uppmuntrande resultatmeddelande — fångas in i JavaScript */
+.result-message {
+  font-size: 1.375rem;
+  font-weight: 600;
+  color: var(--text-strong);
+  max-width: 32ch;
+  line-height: 1.35;
+}
+
+/* Facitlista — varje rad är ett litet kort */
 .result-list {
   list-style: none;
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 10px;
 }
 
-/* Varje facit-rad */
 .result-item {
   display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  background: #000000;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 4px;
-  padding: 12px 14px;
+  flex-direction: column;
+  gap: 6px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-left-width: 5px;
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
   text-align: left;
-  font-size: 0.875rem;
+  box-shadow: var(--shadow-card);
 }
 
-/* Korrekt svar — grön vänsterborder som visuell signal */
+/* Korrekt svar — grön vänsterborder */
 .result-item.correct {
-  border-left: 3px solid #22c55e;
+  border-left-color: var(--accent);
 }
 
-/* Fel svar — röd vänsterborder som visuell signal */
+/* Fel svar — röd vänsterborder */
 .result-item.wrong {
-  border-left: 3px solid #ef4444;
+  border-left-color: var(--danger);
 }
 
-/* Ikonen (t.ex. ✓ eller ✗) i varje facit-rad */
+/* Rad 1: ikon + ord */
+.result-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .result-icon {
-  font-size: 0.875rem;
+  font-size: 1rem;
   flex-shrink: 0;
-  margin-top: 1px;
-}
-
-.result-item.correct .result-icon {
-  color: #22c55e;
-}
-
-.result-item.wrong .result-icon {
-  color: #ef4444;
-}
-
-/* Texten i varje facit-rad */
-.result-word {
-  font-weight: 500;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
   color: #ffffff;
 }
 
-.result-answer {
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 0.8125rem;
+.result-item.correct .result-icon {
+  background: var(--accent);
 }
 
-/* Knapparna längst ner på resultatsidan */
+.result-item.wrong .result-icon {
+  background: var(--danger);
+}
+
+.result-word {
+  font-weight: 700;
+  color: var(--text-strong);
+  font-size: 1.0625rem;
+}
+
+/* Rad 2: "Rätt svar: ..." */
+.result-answer {
+  color: var(--text-muted);
+  font-size: 0.9375rem;
+  padding-left: 34px;
+}
+
+.result-answer strong {
+  color: var(--text-strong);
+  font-weight: 600;
+}
+
 .result-buttons {
   display: flex;
   justify-content: center;
@@ -452,29 +547,85 @@ main {
 
 
 /* =========================================================
+   Animationer
+   Små mjuka animationer för att ge liv åt övergångarna.
+   Finns samlat här för att vara lätta att hitta och justera.
+   ========================================================= */
+
+/* rise — används när en vy dyker upp (fade + lätt glida upp) */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* pop — belöning när ett korrekt svar visas */
+@keyframes pop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.03); }
+  100% { transform: scale(1); }
+}
+
+/* shake — liten skakning när fel svar markeras */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%      { transform: translateX(-4px); }
+  40%      { transform: translateX(4px); }
+  60%      { transform: translateX(-3px); }
+  80%      { transform: translateX(2px); }
+}
+
+/* Respektera användare som valt reducerade animationer */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+
+/* =========================================================
    Responsivt
-   Anpassningar för skärmar smalare än 600px — säkerställer
-   att appen fungerar lika bra på mobil som på desktop.
+   Anpassningar för smalare skärmar.
    ========================================================= */
 
 @media (max-width: 600px) {
-  /* Rubriken krymps något på små skärmar */
+  body {
+    font-size: 16px;
+  }
+
+  main {
+    padding: 20px 16px;
+  }
+
   #view-start h1 {
     font-size: 2.25rem;
   }
 
-  /* Svarsalternativen staplas i en kolumn på mobil för
-     bättre läsbarhet och större klickytor */
-  .options-grid {
-    grid-template-columns: 1fr;
-  }
-
-  /* Lite mindre padding i frågekorten på smala skärmar */
   .question-card {
-    padding: 20px 16px;
+    padding: 22px 18px;
   }
 
-  /* Knapparna staplas vertikalt på mobil */
+  .question-word {
+    font-size: 2rem;
+  }
+
+  .option-btn {
+    padding: 16px 16px;
+    font-size: 1rem;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    padding: 16px 24px;
+    font-size: 1.0625rem;
+  }
+
+  .score-number {
+    font-size: 3.5rem;
+  }
+
   .result-buttons {
     flex-direction: column;
     align-items: center;
@@ -483,23 +634,20 @@ main {
   .result-buttons .btn-primary,
   .result-buttons .btn-secondary {
     width: 100%;
-    max-width: 320px;
-    text-align: center;
+    max-width: 360px;
   }
 }
 
 
 /* =========================================================
    PWA safe area
-   Lägger till extra padding på enheter med "notch" eller
-   rundade hörn (t.ex. iPhone X och nyare) så att innehållet
-   inte hamnar bakom systemgränssnitten.
+   Extra padding på enheter med "notch" eller rundade hörn.
    ========================================================= */
 
 @supports (padding: env(safe-area-inset-bottom)) {
   main {
-    padding-bottom: calc(24px + env(safe-area-inset-bottom));
-    padding-left: calc(16px + env(safe-area-inset-left));
-    padding-right: calc(16px + env(safe-area-inset-right));
+    padding-bottom: calc(32px + env(safe-area-inset-bottom));
+    padding-left: calc(20px + env(safe-area-inset-left));
+    padding-right: calc(20px + env(safe-area-inset-right));
   }
 }
