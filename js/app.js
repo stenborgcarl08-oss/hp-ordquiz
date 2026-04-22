@@ -224,7 +224,7 @@ function showResults() {
     // Symbol och färg ger snabb visuell överblick
     const symbol = isCorrect ? "✓" : "✗";
     li.innerHTML = `
-      <span class="result-symbol">${symbol}</span>
+      <span class="result-icon">${symbol}</span>
       <span class="result-word">${q.word}</span>
       <span class="result-answer">${q.options[q.correct]}</span>
     `;

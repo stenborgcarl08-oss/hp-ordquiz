@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="HP Ordquiz">
+  <!-- Mörk bakgrund med subtil avrundning matchar appens Void Black-tema -->
+  <rect width="512" height="512" rx="80" ry="80" fill="#0f0f0f"/>
+  <!-- "HP" i Electric Cyan — accentfärgen som används genomgående i UI:t -->
+  <text x="256" y="328"
+        font-family="Inter, 'Segoe UI', ui-sans-serif, system-ui, sans-serif"
+        font-size="240"
+        font-weight="600"
+        fill="#00ffff"
+        text-anchor="middle"
+        letter-spacing="-8">HP</text>
+</svg>

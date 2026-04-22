@@ -11,8 +11,13 @@
   <!-- PWA-inställningar: gör att appen kan installeras på hemskärmen
        och ser ut som en native-app utan webbläsarens adressfält -->
   <meta name="theme-color" content="#0f0f0f">
+  <!-- mobile-web-app-capable är den moderna standarden; apple-varianten
+       behålls för iOS-enheter som ännu inte stöder den nya -->
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <!-- SVG-favicon för flikar i moderna webbläsare; PNG används av iOS -->
+  <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
   <link rel="manifest" href="manifest.json">
 
