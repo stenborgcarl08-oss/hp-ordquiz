@@ -1,5 +1,5 @@
 /* app.js — Quizlogik för HP Ordquiz
-   Hanterar vyväxling, frågeurval, svar och resultatvisning */
+   Hanterar vyväxling, frågeurval, svar, hintpopup och resultatvisning */
 
 // ---------------------------------------------------------------
 // Tillstånd (state) — en enda källa för appens nuvarande data
@@ -35,6 +35,11 @@ const resultLevel   = document.getElementById("result-level");
 const resultMessage = document.getElementById("result-message");
 const resultList    = document.getElementById("result-list");
 
+const hintOverlay = document.getElementById("hint-overlay");
+const hintWord    = document.getElementById("hint-word");
+const hintText    = document.getElementById("hint-text");
+const hintClose   = document.getElementById("hint-close");
+
 // ---------------------------------------------------------------
 // Nivånamn — översättningstabell från data-värde till visningstext
 // ---------------------------------------------------------------
@@ -51,6 +56,10 @@ const levelNames = {
 // 1800 ms ger tid att se både rätt (grönt) och fel (rött) markering
 // utan att flödet känns segt.
 const ANSWER_FEEDBACK_MS = 1800;
+
+// Hur länge användaren måste hålla inne ett alternativ för att få upp
+// förklaringen. 500 ms är standard för långtryck på mobila gränssnitt.
+const LONG_PRESS_MS = 500;
 
 // ---------------------------------------------------------------
 // Vyväxling — döljer alla vyer och visar den begärda
@@ -77,7 +86,9 @@ function shuffle(array) {
 }
 
 // ---------------------------------------------------------------
-// Frågeurval — filtrerar, blandar och väljer 10 frågor
+// Frågeurval — filtrerar, blandar och väljer 10 frågor.
+// Varje alternativ är ett objekt { text, hint? } — hint:en följer
+// med originalet efter att ordningen har slumpats.
 // ---------------------------------------------------------------
 
 function selectQuestions(difficulty) {
@@ -88,7 +99,7 @@ function selectQuestions(difficulty) {
   const shuffled = shuffle(filtered).slice(0, 10);
 
   return shuffled.map(q => {
-    const indexed = q.options.map((text, i) => ({ text, originalIndex: i }));
+    const indexed = q.options.map((opt, i) => ({ ...opt, originalIndex: i }));
     const shuffledOptions = shuffle(indexed);
 
     const newCorrect = shuffledOptions.findIndex(
@@ -97,7 +108,7 @@ function selectQuestions(difficulty) {
 
     return {
       word: q.word,
-      options: shuffledOptions.map(opt => opt.text),
+      options: shuffledOptions.map(opt => ({ text: opt.text, hint: opt.hint || null })),
       correct: newCorrect,
       difficulty: q.difficulty
     };
@@ -131,11 +142,17 @@ function renderQuestion() {
 
   optionsGrid.innerHTML = "";
 
-  q.options.forEach((optionText, i) => {
+  q.options.forEach((option, i) => {
     const btn = document.createElement("button");
     btn.className = "option-btn";
     btn.dataset.index = i;
-    btn.textContent = optionText;
+    btn.textContent = option.text;
+    // hint sparas på knappen så att långtrycks-logiken kan läsa den
+    // utan att hålla reda på vilken fråga som visas
+    if (option.hint) {
+      btn.dataset.hint = option.hint;
+      btn.dataset.word = option.text;
+    }
     optionsGrid.appendChild(btn);
   });
 }
@@ -168,6 +185,44 @@ function handleAnswer(selectedIndex) {
       showResults();
     }
   }, ANSWER_FEEDBACK_MS);
+}
+
+// ---------------------------------------------------------------
+// Långtryck för förklaring — håll inne ett alternativ i 500 ms
+// för att se hint:en. Klicket som följer släpps igenom som
+// vanligt så att användaren inte råkar välja ett svar via misstag.
+// ---------------------------------------------------------------
+
+let pressTimer = null;
+let hintShownForCurrentPress = false;
+
+function startPress(btn) {
+  if (btn.disabled) return;
+  const hint = btn.dataset.hint;
+  if (!hint) return;
+  cancelPress();
+  pressTimer = setTimeout(() => {
+    showHint(btn.dataset.word, hint);
+    hintShownForCurrentPress = true;
+    pressTimer = null;
+  }, LONG_PRESS_MS);
+}
+
+function cancelPress() {
+  if (pressTimer) {
+    clearTimeout(pressTimer);
+    pressTimer = null;
+  }
+}
+
+function showHint(word, text) {
+  hintWord.textContent = word;
+  hintText.textContent = text;
+  hintOverlay.hidden = false;
+}
+
+function hideHint() {
+  hintOverlay.hidden = true;
 }
 
 // ---------------------------------------------------------------
@@ -231,26 +286,43 @@ function showResults() {
   qs.forEach((q, i) => {
     const userAnswer = state.answers[i];
     const isCorrect  = userAnswer === q.correct;
+    const correctOpt = q.options[q.correct];
 
     const li = document.createElement("li");
     li.className = isCorrect ? "result-item correct" : "result-item wrong";
 
     const symbol = isCorrect ? "✓" : "✗";
 
-    /* Två rader: första har ikon + ord, andra har hela rätta svaret.
-       Längre svarsalternativ gör att en egen rad blir mer läsbar. */
+    /* Hint:en visas efter det rätta ordet så att facit direkt ger
+       förklaringen utan att användaren behöver leta efter den. */
+    const hintHtml = correctOpt.hint
+      ? `<span class="result-hint"> — ${escapeHtml(correctOpt.hint)}</span>`
+      : "";
+
     li.innerHTML = `
       <div class="result-row">
         <span class="result-icon">${symbol}</span>
-        <span class="result-word">${q.word}</span>
+        <span class="result-word">${escapeHtml(q.word)}</span>
       </div>
-      <div class="result-answer"><strong>Rätt svar:</strong> ${q.options[q.correct]}</div>
+      <div class="result-answer"><strong>Rätt svar:</strong> ${escapeHtml(correctOpt.text)}${hintHtml}</div>
     `;
 
     resultList.appendChild(li);
   });
 
   showView(viewResult);
+}
+
+/* Enkel HTML-escape så att användargenererad text (kommer från questions.js)
+   inte kan bryta ut ur innerHTML. questions.js är vår egen data, men det är
+   en god vana att alltid sanera när innerHTML används. */
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
 // ---------------------------------------------------------------
@@ -269,10 +341,45 @@ document.querySelectorAll(".difficulty-btn").forEach(btn => {
 
 startBtn.addEventListener("click", startQuiz);
 
+/* pointerdown/up/cancel täcker både mus och touch med samma kod.
+   Vi startar en timer vid nedtryck, och om den hinner löpa ut
+   innan fingret släpps visas hint:en. Då sätts en flagga som
+   hindrar efterföljande click från att välja svaret. */
+optionsGrid.addEventListener("pointerdown", event => {
+  const btn = event.target.closest(".option-btn");
+  if (btn) startPress(btn);
+});
+
+optionsGrid.addEventListener("pointerup", cancelPress);
+optionsGrid.addEventListener("pointercancel", cancelPress);
+optionsGrid.addEventListener("pointerleave", cancelPress);
+
+/* Stoppar den inbyggda långtrycks-menyn (kopiera/markera text) på
+   mobil så att vår egen hint-popup får utrymme att visas. */
+optionsGrid.addEventListener("contextmenu", event => {
+  if (event.target.closest(".option-btn")) {
+    event.preventDefault();
+  }
+});
+
 optionsGrid.addEventListener("click", event => {
   const btn = event.target.closest(".option-btn");
   if (!btn || btn.disabled) return;
+  /* Om hint:en nyss visades var det ett långtryck — inte ett val.
+     Vi nollställer flaggan men tar inget svar. */
+  if (hintShownForCurrentPress) {
+    hintShownForCurrentPress = false;
+    return;
+  }
   handleAnswer(Number(btn.dataset.index));
+});
+
+/* Klick utanför hint-rutan (på overlay-bakgrunden eller på Stäng)
+   döljer förklaringen. Klick på själva rutan släpps igenom. */
+hintOverlay.addEventListener("click", event => {
+  if (event.target === hintOverlay || event.target === hintClose) {
+    hideHint();
+  }
 });
 
 retryBtn.addEventListener("click", startQuiz);

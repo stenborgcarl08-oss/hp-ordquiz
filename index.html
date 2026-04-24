@@ -97,6 +97,20 @@
 
   </main>
 
+  <!-- Hint-popup: visas med långtryck (500 ms) på ett svarsalternativ
+       som har en förklaring. Ligger utanför <main> så att den täcker
+       hela skärmen via position: fixed, och är dold vid start via
+       [hidden] tills JavaScript öppnar den.
+       role="dialog" + aria-modal talar om för skärmläsare att detta
+       är en modal dialog som tar fokus från resten av sidan. -->
+  <div id="hint-overlay" class="hint-overlay" hidden>
+    <div class="hint-card" role="dialog" aria-labelledby="hint-word" aria-modal="true">
+      <h3 class="hint-word" id="hint-word"></h3>
+      <p class="hint-text" id="hint-text"></p>
+      <button class="hint-close" id="hint-close" type="button">Stäng</button>
+    </div>
+  </div>
+
   <!-- questions.js laddas före app.js eftersom app.js är beroende av frågorna -->
   <script src="js/questions.js" defer></script>
   <script src="js/app.js" defer></script>

@@ -4,7 +4,7 @@
 
 /* Versionsnummer i cachenamnet: när vi ändrar filer nedan och bumpar
    siffran tar aktiveringssteget bort den gamla cachen automatiskt */
-const CACHE_NAME = "hp-ordquiz-v2";
+const CACHE_NAME = "hp-ordquiz-v3";
 
 /* Alla filer appen behöver för att fungera offline.
    Relativa vägar gör att samma manifest fungerar oavsett om sidan

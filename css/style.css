@@ -332,8 +332,8 @@ main {
   margin-bottom: 10px;
 }
 
-/* Svarsalternativ: en kolumn eftersom meningarna nu är längre.
-   En kolumn håller texten läsbar och knapparna stora. */
+/* Svarsalternativ: en kolumn eftersom knapparna ska vara stora
+   och lätta att träffa även vid långtryck på mobil. */
 .options-grid {
   display: flex;
   flex-direction: column;
@@ -537,12 +537,103 @@ main {
   font-weight: 600;
 }
 
+/* Förklaring efter rätt svar i facit — diskret ton så att själva
+   synonymen fortfarande är det ögat söker först */
+.result-hint {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
 .result-buttons {
   display: flex;
   justify-content: center;
   gap: 12px;
   flex-wrap: wrap;
   width: 100%;
+}
+
+
+/* =========================================================
+   Hint-popup
+   Modal som dyker upp när användaren långtrycker ett alternativ
+   med en förklaring. Täcker hela skärmen med en mjuk bakgrund
+   och centrerar ett litet kort med ordet och dess förklaring.
+   ========================================================= */
+
+/* Bakgrundsöverlagring — position: fixed fäster mot viewport
+   så att rutan alltid syns oavsett scrollposition. Klick på
+   själva overlayn (inte kortet) stänger popupen via JavaScript. */
+.hint-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 42, 27, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 10;
+  animation: fade var(--dur-fast) var(--ease) both;
+}
+
+/* Själva hint-kortet — vitt med kraftig skugga så att det lyfter
+   tydligt över det som ligger under */
+.hint-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lift);
+  padding: 28px 24px 20px;
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: center;
+  animation: rise var(--dur-med) var(--ease) both;
+}
+
+/* Ordet överst i popupen — fetstilt så att man ser vilket
+   alternativ förklaringen gäller */
+.hint-card .hint-word {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-strong);
+  letter-spacing: -0.01em;
+}
+
+.hint-card .hint-text {
+  font-size: 1.0625rem;
+  color: var(--text-normal);
+  line-height: 1.5;
+}
+
+/* Stäng-knappen återanvänder inte btn-secondary eftersom den
+   behöver vara mindre och mer diskret i en popup än på en resultatsida */
+.hint-close {
+  margin-top: 6px;
+  align-self: center;
+  background: var(--accent-soft);
+  color: var(--accent-hover);
+  border: none;
+  border-radius: var(--radius-pill);
+  padding: 10px 28px;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  min-height: 44px;
+  transition:
+    background var(--dur-fast) var(--ease),
+    transform var(--dur-fast) var(--ease);
+}
+
+.hint-close:hover {
+  background: var(--accent);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.hint-close:active {
+  transform: translateY(0);
 }
 
 
@@ -556,6 +647,12 @@ main {
 @keyframes rise {
   from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+
+/* fade — ren opacitetsövergång, används för hint-overlayns bakgrund */
+@keyframes fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 /* pop — belöning när ett korrekt svar visas */
