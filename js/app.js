@@ -57,10 +57,6 @@ const levelNames = {
 // utan att flödet känns segt.
 const ANSWER_FEEDBACK_MS = 1800;
 
-// Hur länge användaren måste hålla inne ett alternativ för att få upp
-// förklaringen. 500 ms är standard för långtryck på mobila gränssnitt.
-const LONG_PRESS_MS = 500;
-
 // ---------------------------------------------------------------
 // Vyväxling — döljer alla vyer och visar den begärda
 // ---------------------------------------------------------------
@@ -143,17 +139,31 @@ function renderQuestion() {
   optionsGrid.innerHTML = "";
 
   q.options.forEach((option, i) => {
+    const row = document.createElement("div");
+    row.className = "option-row";
+
     const btn = document.createElement("button");
     btn.className = "option-btn";
+    btn.type = "button";
     btn.dataset.index = i;
     btn.textContent = option.text;
-    // hint sparas på knappen så att långtrycks-logiken kan läsa den
-    // utan att hålla reda på vilken fråga som visas
+    row.appendChild(btn);
+
+    /* Bara alternativ med en förklaring får en pilknapp. Knappen
+       ligger som systerelement till svarsknappen (inte inuti) så att
+       ett klick på förklaringen inte kan räknas som ett svarsval. */
     if (option.hint) {
-      btn.dataset.hint = option.hint;
-      btn.dataset.word = option.text;
+      const hintBtn = document.createElement("button");
+      hintBtn.className = "option-hint-btn";
+      hintBtn.type = "button";
+      hintBtn.dataset.hint = option.hint;
+      hintBtn.dataset.word = option.text;
+      hintBtn.setAttribute("aria-label", `Visa förklaring av ${option.text}`);
+      hintBtn.textContent = "▾";
+      row.appendChild(hintBtn);
     }
-    optionsGrid.appendChild(btn);
+
+    optionsGrid.appendChild(row);
   });
 }
 
@@ -177,6 +187,12 @@ function handleAnswer(selectedIndex) {
     }
   });
 
+  // Stäng också av pilknapparna under feedbackfasen så att popupen
+  // inte kan öppnas mitt i övergången till nästa fråga
+  optionsGrid.querySelectorAll(".option-hint-btn").forEach(b => {
+    b.disabled = true;
+  });
+
   setTimeout(() => {
     state.currentIndex++;
     if (state.currentIndex < state.currentQuestions.length) {
@@ -188,32 +204,8 @@ function handleAnswer(selectedIndex) {
 }
 
 // ---------------------------------------------------------------
-// Långtryck för förklaring — håll inne ett alternativ i 500 ms
-// för att se hint:en. Klicket som följer släpps igenom som
-// vanligt så att användaren inte råkar välja ett svar via misstag.
+// Förklaringspopup — öppnas via pilknappen bredvid ett alternativ
 // ---------------------------------------------------------------
-
-let pressTimer = null;
-let hintShownForCurrentPress = false;
-
-function startPress(btn) {
-  if (btn.disabled) return;
-  const hint = btn.dataset.hint;
-  if (!hint) return;
-  cancelPress();
-  pressTimer = setTimeout(() => {
-    showHint(btn.dataset.word, hint);
-    hintShownForCurrentPress = true;
-    pressTimer = null;
-  }, LONG_PRESS_MS);
-}
-
-function cancelPress() {
-  if (pressTimer) {
-    clearTimeout(pressTimer);
-    pressTimer = null;
-  }
-}
 
 function showHint(word, text) {
   hintWord.textContent = word;
@@ -341,36 +333,18 @@ document.querySelectorAll(".difficulty-btn").forEach(btn => {
 
 startBtn.addEventListener("click", startQuiz);
 
-/* pointerdown/up/cancel täcker både mus och touch med samma kod.
-   Vi startar en timer vid nedtryck, och om den hinner löpa ut
-   innan fingret släpps visas hint:en. Då sätts en flagga som
-   hindrar efterföljande click från att välja svaret. */
-optionsGrid.addEventListener("pointerdown", event => {
-  const btn = event.target.closest(".option-btn");
-  if (btn) startPress(btn);
-});
-
-optionsGrid.addEventListener("pointerup", cancelPress);
-optionsGrid.addEventListener("pointercancel", cancelPress);
-optionsGrid.addEventListener("pointerleave", cancelPress);
-
-/* Stoppar den inbyggda långtrycks-menyn (kopiera/markera text) på
-   mobil så att vår egen hint-popup får utrymme att visas. */
-optionsGrid.addEventListener("contextmenu", event => {
-  if (event.target.closest(".option-btn")) {
-    event.preventDefault();
-  }
-});
-
+/* Ett klick i svarsraden kan gälla antingen pilknappen (öppna hint)
+   eller själva svarsknappen (välj svar). Pilknappen kollas först så
+   att den aldrig av misstag registreras som ett svarsval. */
 optionsGrid.addEventListener("click", event => {
-  const btn = event.target.closest(".option-btn");
-  if (!btn || btn.disabled) return;
-  /* Om hint:en nyss visades var det ett långtryck — inte ett val.
-     Vi nollställer flaggan men tar inget svar. */
-  if (hintShownForCurrentPress) {
-    hintShownForCurrentPress = false;
+  const hintBtn = event.target.closest(".option-hint-btn");
+  if (hintBtn) {
+    if (hintBtn.disabled) return;
+    showHint(hintBtn.dataset.word, hintBtn.dataset.hint);
     return;
   }
+  const btn = event.target.closest(".option-btn");
+  if (!btn || btn.disabled) return;
   handleAnswer(Number(btn.dataset.index));
 });
 
